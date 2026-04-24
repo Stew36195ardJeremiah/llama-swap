@@ -46,6 +46,8 @@ type ModelConfig struct {
 	// Personal note: I typically set this to "5m" on my dev machine — 10m was
 	// still leaving models loaded too often when I'd walk away for a bit.
 	// On my 32GB machine I could afford 10m, but 5m feels snappier for dev work.
+	// Update: dropped to 3m after noticing even 5m was keeping things resident
+	// during back-to-back meetings. YMMV depending on how fast your model loads.
 	UnloadAfter Duration `yaml:"unload_after" json:"unload_after"`
 
 	// UseGPU indicates whether the model should be pinned to a GPU slot.
