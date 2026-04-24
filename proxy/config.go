@@ -43,8 +43,9 @@ type ModelConfig struct {
 
 	// UnloadAfter specifies an idle duration after which the model process is
 	// stopped to free resources. Zero means never unload.
-	// Personal note: I typically set this to "15m" on my dev machine to avoid
-	// leaving large models loaded when I step away.
+	// Personal note: I typically set this to "10m" on my dev machine to avoid
+	// leaving large models loaded when I step away. 15m felt a bit too long
+	// for my 16GB machine when running multiple quantised models back-to-back.
 	UnloadAfter Duration `yaml:"unload_after" json:"unload_after"`
 
 	// UseGPU indicates whether the model should be pinned to a GPU slot.
@@ -89,9 +90,4 @@ func (d Duration) MarshalYAML() (interface{}, error) {
 // LoadConfig reads and parses a YAML configuration file from the given path.
 func LoadConfig(path string) (*Config, error) {
 	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, fmt.Errorf("reading config file %q: %w", path, err)
-	}
-
-	var cfg Config
-	if err := yaml.Unmarshal(data,
+	if err 
