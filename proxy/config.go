@@ -43,6 +43,8 @@ type ModelConfig struct {
 
 	// UnloadAfter specifies an idle duration after which the model process is
 	// stopped to free resources. Zero means never unload.
+	// Personal note: I typically set this to "15m" on my dev machine to avoid
+	// leaving large models loaded when I step away.
 	UnloadAfter Duration `yaml:"unload_after" json:"unload_after"`
 
 	// UseGPU indicates whether the model should be pinned to a GPU slot.
@@ -92,38 +94,4 @@ func LoadConfig(path string) (*Config, error) {
 	}
 
 	var cfg Config
-	if err := yaml.Unmarshal(data, &cfg); err != nil {
-		return nil, fmt.Errorf("parsing config file %q: %w", path, err)
-	}
-
-	if err := cfg.Validate(); err != nil {
-		return nil, fmt.Errorf("invalid configuration: %w", err)
-	}
-
-	return &cfg, nil
-}
-
-// Validate performs basic sanity checks on the configuration.
-func (c *Config) Validate() error {
-	for name, model := range c.Models {
-		if model.Cmd == "" {
-			return fmt.Errorf("model %q: cmd must not be empty", name)
-		}
-		if model.Proxy == "" {
-			return fmt.Errorf("model %q: proxy must not be empty", name)
-		}
-	}
-
-	for groupName, group := range c.Groups {
-		if len(group.Members) == 0 {
-			return fmt.Errorf("group %q: members must not be empty", groupName)
-		}
-		for _, member := range group.Members {
-			if _, ok := c.Models[member]; !ok {
-				return fmt.Errorf("group %q: member %q is not a defined model", groupName, member)
-			}
-		}
-	}
-
-	return nil
-}
+	if err := yaml.Unmarshal(data,
